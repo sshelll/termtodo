@@ -8,8 +8,26 @@ import (
 )
 
 type todoService struct {
-	s     *screen.Screen
-	input string
+	s               *screen.Screen
+	input           string
+	cateKey         string
+	isInputCategory bool
+}
+
+func (srv *todoService) pressEscOrCtrlC(*tcell.EventKey) {
+	s := srv.s
+
+	if s.IsNormalMode() {
+		s.Exit()
+		return
+	}
+
+	if s.IsInsertMode() {
+		s.NormalMode()
+		srv.input = ""
+		srv.refreshNormalMode()
+		return
+	}
 }
 
 func (srv *todoService) pressRune(evk *tcell.EventKey) {
@@ -18,7 +36,11 @@ func (srv *todoService) pressRune(evk *tcell.EventKey) {
 		return
 	}
 	srv.input += util.GetKeyRune(evk.Name())
-	srv.refreshInsertMode()
+	if srv.isInputCategory {
+		srv.refreshInsertMode("New Category: ")
+	} else {
+		srv.refreshInsertMode("New TODO: ")
+	}
 }
 
 func (srv *todoService) pressDelOrBS(*tcell.EventKey) {
@@ -27,10 +49,15 @@ func (srv *todoService) pressDelOrBS(*tcell.EventKey) {
 
 	if s.IsNormalMode() {
 		cursorLn := s.CursorLine()
-		todolist.DelByIdx(cursorLn - 1)
+		cateKey, cursorOffset := srv.getCategoryByCursor()
+		//panic(fmt.Sprintf("cateKey = %s, offset = %d", cateKey, cursorOffset))
+		todolist.DelWithCategoryKey(cateKey, cursorOffset)
+
+		// reset cursor to avoid over height limit of screen
 		if cursorLn > 1 {
 			s.SetCursorLine(cursorLn - 1)
 		}
+
 		srv.refreshNormalMode()
 		return
 	}
@@ -44,7 +71,11 @@ func (srv *todoService) pressDelOrBS(*tcell.EventKey) {
 		rs = rs[:len(rs)-1]
 		srv.input = string(rs)
 
-		srv.refreshInsertMode()
+		if srv.isInputCategory {
+			srv.refreshInsertMode("New Category: ")
+		} else {
+			srv.refreshInsertMode("New TODO: ")
+		}
 	}
 
 }
@@ -54,15 +85,33 @@ func (srv *todoService) pressEnter(*tcell.EventKey) {
 	s := srv.s
 
 	if s.IsNormalMode() { // switch item status
-		curLn := s.CursorLine()
-		todolist.SwitchStatusByIdx(curLn - 1)
+
+		cateKey, offset := srv.getCategoryByCursor()
+		if util.IsBlank(cateKey) {
+			return
+		}
+
+		// cursor is at category line -> unfold / fold category
+		if offset == 0 {
+			todolist.SwitchFoldStatus(cateKey)
+			srv.refreshNormalMode()
+			return
+		}
+
+		// cursor is at item line -> remark item status
+		todolist.RemarkItemStatus(cateKey, offset)
 		srv.refreshNormalMode()
 		return
+
 	}
 
 	if s.IsInsertMode() { // save new item
 		s.NormalMode()
-		todolist.Add("default", srv.input)
+		if srv.isInputCategory {
+			todolist.AddNewCategory(srv.input)
+		} else {
+			todolist.AddNewItem(srv.cateKey, srv.input)
+		}
 		srv.input = ""
 		srv.refreshNormalMode()
 		return
@@ -74,8 +123,20 @@ func (srv *todoService) pressCtrlN(*tcell.EventKey) {
 	s := srv.s
 	if s.IsNormalMode() {
 		srv.input = ""
+		srv.isInputCategory = false
+		srv.cateKey, _ = srv.getCategoryByCursor()
 		s.InsertMode()
-		srv.refreshInsertMode()
+		srv.refreshInsertMode("New TODO: ")
+	}
+}
+
+func (srv *todoService) pressCtrlK(*tcell.EventKey) {
+	s := srv.s
+	if s.IsNormalMode() {
+		srv.input = ""
+		srv.isInputCategory = true
+		s.InsertMode()
+		srv.refreshInsertMode("New Category: ")
 	}
 }
 
@@ -92,13 +153,12 @@ func (srv *todoService) pressUpDown(evk *tcell.EventKey) {
 	curLn := s.CursorLine()
 
 	flag := false
-	doneCnt, todoCnt := todolist.Count()
 
 	// 1st line is title
 	if k == tcell.KeyUp && curLn > 1 {
 		s.SetCursorLine(curLn - 1)
 		flag = true
-	} else if k == tcell.KeyDown && curLn < util.If(hideDoneFlag, todoCnt, todoCnt+doneCnt).(int) {
+	} else if k == tcell.KeyDown && curLn < len(todolist.Content())-1 { // TODO: do not call Content()
 		s.SetCursorLine(curLn + 1)
 		flag = true
 	}
@@ -131,13 +191,55 @@ func (srv *todoService) pressCtrlR(*tcell.EventKey) {
 	srv.refreshNormalMode()
 }
 
-func (srv *todoService) refreshInsertMode() {
+func (srv *todoService) refreshInsertMode(msg string) {
 	srv.s.Clear()
-	srv.s.SetContent(0, setMainContent(srv.s), "New: "+srv.input)
+	srv.s.SetContent(0, show(srv.s), msg+srv.input)
 }
 
 func (srv *todoService) refreshNormalMode() {
 	s := srv.s
 	s.Clear()
-	setMainContent(s)
+	show(s)
+}
+
+func (srv *todoService) getCategoryByCursor() (cateKey string, cursorOffset int) {
+	s := srv.s
+
+	curLn := s.CursorLine()
+
+	//panic(fmt.Sprintf("cursor = %d", curLn))
+
+	cateKeys := todolist.CateKeys()
+
+	// 1st line is title
+	idx := 0
+
+	for _, cateKey := range cateKeys {
+
+		cate := todolist.GetCategory(cateKey)
+		if cate == nil {
+			idx++
+			if idx == curLn {
+				return cateKey, 0
+			}
+			continue
+		}
+
+		// cate title line
+		idx++
+		cateLn := idx
+
+		// cate content line
+		if !cate.Fold() {
+			idx += cate.Size()
+		}
+
+		if idx >= curLn {
+			//panic("cate = " + cate.Key())
+			return cate.Key(), curLn - cateLn
+		}
+
+	}
+
+	return "", 0
 }

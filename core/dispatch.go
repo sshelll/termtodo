@@ -17,7 +17,7 @@ func (d *dispatcher) Dispatch() {
 
 	s := d.s
 
-	setMainContent(s)
+	show(s)
 
 	for {
 
@@ -46,15 +46,9 @@ func (d *dispatcher) Dispatch() {
 
 }
 
-func setMainContent(s *screen.Screen) (nLines int) {
+func show(s *screen.Screen) (nLines int) {
 
-	var lines []string
-
-	if hideDoneFlag {
-		lines = todolist.TodoLines()
-	} else {
-		lines = todolist.Lines()
-	}
+	lines := todolist.Content()
 
 	for i, ln := range lines {
 		if i == s.CursorLine() && s.IsNormalMode() {

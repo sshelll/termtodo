@@ -24,9 +24,7 @@ func bindKeys(s *screen.Screen) {
 	srv := &todoService{s: s}
 
 	keyBinder.Bind(
-		func(*tcell.EventKey) {
-			s.Exit()
-		},
+		srv.pressEscOrCtrlC,
 		tcell.KeyEscape, tcell.KeyESC, tcell.KeyEsc, tcell.KeyCtrlC,
 	)
 
@@ -48,6 +46,11 @@ func bindKeys(s *screen.Screen) {
 	keyBinder.Bind(
 		srv.pressCtrlN,
 		tcell.KeyCtrlN,
+	)
+
+	keyBinder.Bind(
+		srv.pressCtrlK,
+		tcell.KeyCtrlK,
 	)
 
 	keyBinder.Bind(

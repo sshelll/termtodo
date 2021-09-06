@@ -41,3 +41,12 @@ func If(condition bool, a, b interface{}) interface{} {
 	}
 	return b
 }
+
+func ContainStr(src []string, target string) bool {
+	for _, s := range src {
+		if target == s {
+			return true
+		}
+	}
+	return false
+}
