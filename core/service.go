@@ -188,6 +188,7 @@ func (srv *todoService) pressCtrlR(*tcell.EventKey) {
 		return
 	}
 	util.WithFatalf(todolist.Reload, "reload")
+	srv.s.SetCursorLine(1)
 	srv.refreshNormalMode()
 }
 

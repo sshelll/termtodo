@@ -248,4 +248,5 @@ func init() {
 	if _, err := os.Stat(inst.filePath); err == nil {
 		util.WithFatalf(Reload, "reload")
 	}
+
 }
