@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/SCU-SJL/termtodo/screen"
 	"github.com/SCU-SJL/termtodo/todolist"
 	"github.com/SCU-SJL/termtodo/util"
@@ -35,11 +37,12 @@ func (srv *todoService) pressRune(evk *tcell.EventKey) {
 	if !s.IsInsertMode() {
 		return
 	}
+
 	srv.input += util.GetKeyRune(evk.Name())
 	if srv.isInputCategory {
 		srv.refreshInsertMode("New Category: ")
 	} else {
-		srv.refreshInsertMode("New TODO: ")
+		srv.refreshInsertMode(fmt.Sprintf("New TODO (%s): ", srv.cateKey))
 	}
 }
 
@@ -74,7 +77,7 @@ func (srv *todoService) pressDelOrBS(*tcell.EventKey) {
 		if srv.isInputCategory {
 			srv.refreshInsertMode("New Category: ")
 		} else {
-			srv.refreshInsertMode("New TODO: ")
+			srv.refreshInsertMode(fmt.Sprintf("New TODO (%s): ", srv.cateKey))
 		}
 	}
 
@@ -126,7 +129,7 @@ func (srv *todoService) pressCtrlN(*tcell.EventKey) {
 		srv.isInputCategory = false
 		srv.cateKey, _ = srv.getCategoryByCursor()
 		s.InsertMode()
-		srv.refreshInsertMode("New TODO: ")
+		srv.refreshInsertMode(fmt.Sprintf("New TODO (%s): ", srv.cateKey))
 	}
 }
 
