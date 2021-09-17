@@ -216,6 +216,8 @@ func regroup() {
 		return !inst.Items[i].IsDone && inst.Items[j].IsDone
 	})
 
+	oldCate := inst.categories
+
 	// 5 categories should be enough :)
 	inst.categories = make(map[string]*category, 5)
 	cateMap := make(map[string]*category, 5)
@@ -224,6 +226,10 @@ func regroup() {
 		// update categories
 		if cateMap[item.Key] == nil {
 			cateMap[item.Key] = newCategory(item.Key).Append(item)
+			if c, ok := oldCate[item.Key]; ok {
+				cateMap[item.Key].fold = c.fold
+
+			}
 		} else {
 			cateMap[item.Key].Append(item)
 		}
