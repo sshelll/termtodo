@@ -109,8 +109,6 @@ func Reload() error {
 
 func DelWithCategoryKey(cateKey string, offset int) {
 
-	//panic(fmt.Sprintf("%s", inst.CateKeys))
-
 	var cate *category
 	var idx int
 
@@ -174,6 +172,40 @@ func Content() []string {
 	return lines
 }
 
+func DoingContent() []string {
+	return groupedContent(false)
+}
+
+func DoneContent() []string {
+	return groupedContent(true)
+}
+
+func groupedContent(isDone bool) []string {
+
+	lines := make([]string, 0, len(inst.Items))
+	if isDone {
+		lines = append(lines, "[What's done!✅]")
+	} else {
+		lines = append(lines, "[What's doing!❎]")
+	}
+
+	if len(inst.Items) == 0 {
+		lines[0] = fmt.Sprintf("%s/(empty)", lines[0])
+		return lines
+	}
+
+	tmpl := util.If(isDone, "[👌] %s - (%s)", "[🕑] %s - (%s)").(string)
+
+	for _, item := range inst.Items {
+		if isDone == item.IsDone {
+			lines = append(lines, fmt.Sprintf(tmpl, item.Desc, item.Key))
+		}
+	}
+
+	return lines
+
+}
+
 func Save() error {
 
 	f, err := os.Create(inst.filePath)
@@ -211,9 +243,12 @@ func RemarkItemStatus(cateKey string, offset int) {
 
 func regroup() {
 
-	// sort by 'is_done'
+	// sort by 'is_done' and ascii
 	sort.SliceStable(inst.Items, func(i, j int) bool {
-		return !inst.Items[i].IsDone && inst.Items[j].IsDone
+		if !inst.Items[i].IsDone && inst.Items[j].IsDone {
+			return true
+		}
+		return inst.Items[i].Key < inst.Items[i].Key
 	})
 
 	oldCate := inst.categories

@@ -68,4 +68,14 @@ func bindKeys(s *screen.Screen) {
 		tcell.KeyCtrlR,
 	)
 
+	keyBinder.Bind(
+		srv.pressCtrlX,
+		tcell.KeyCtrlX,
+	)
+
+	keyBinder.Bind(
+		srv.pressCtrlZ,
+		tcell.KeyCtrlZ,
+	)
+
 }

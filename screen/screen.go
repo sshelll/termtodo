@@ -17,6 +17,7 @@ type mode int
 const (
 	def mode = iota
 	insert
+	doneDoing
 )
 
 type Screen struct {
@@ -58,12 +59,21 @@ func (s *Screen) NormalMode() *Screen {
 	return s
 }
 
+func (s *Screen) DoneDoingMode() *Screen {
+	s.m = doneDoing
+	return s
+}
+
 func (s *Screen) IsInsertMode() bool {
 	return s.m == insert
 }
 
 func (s *Screen) IsNormalMode() bool {
 	return s.m == def
+}
+
+func (s *Screen) IsDoneDoingMode() bool {
+	return s.m == doneDoing
 }
 
 func (s *Screen) SetCursorLine(n int) *Screen {

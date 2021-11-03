@@ -17,7 +17,7 @@ func (d *dispatcher) Dispatch() {
 
 	s := d.s
 
-	show(s)
+	showDefault(s)
 
 	for {
 
@@ -47,14 +47,34 @@ func (d *dispatcher) Dispatch() {
 
 }
 
-func show(s *screen.Screen) (nLines int) {
+func showDefault(s *screen.Screen) (nLines int) {
 
 	lines := todolist.Content()
 
 	for i, ln := range lines {
+		s.SetContent(0, i, ln)
 		if i == s.CursorLine() && s.IsNormalMode() {
 			s.SetContent(0, i, ln+"👈")
 		}
+	}
+
+	return len(lines)
+
+}
+
+func showDone(s *screen.Screen) (nLines int) {
+	return doShowDoneDoing(s, todolist.DoneContent())
+}
+
+func showDoing(s *screen.Screen) (nLines int) {
+	return doShowDoneDoing(s, todolist.DoingContent())
+}
+
+func doShowDoneDoing(s *screen.Screen, lines []string) (nLines int) {
+
+	s.Clear()
+
+	for i, ln := range lines {
 		s.SetContent(0, i, ln)
 	}
 

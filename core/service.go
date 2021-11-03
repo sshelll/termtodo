@@ -30,6 +30,14 @@ func (srv *todoService) pressEscOrCtrlC(*tcell.EventKey) {
 		srv.refreshNormalMode()
 		return
 	}
+
+	if s.IsDoneDoingMode() {
+		s.NormalMode()
+		srv.input = ""
+		srv.refreshNormalMode()
+		return
+	}
+
 }
 
 func (srv *todoService) pressRune(evk *tcell.EventKey) {
@@ -53,7 +61,6 @@ func (srv *todoService) pressDelOrBS(*tcell.EventKey) {
 	if s.IsNormalMode() {
 		cursorLn := s.CursorLine()
 		cateKey, cursorOffset := srv.getCategoryByCursor()
-		//panic(fmt.Sprintf("cateKey = %s, offset = %d", cateKey, cursorOffset))
 		todolist.DelWithCategoryKey(cateKey, cursorOffset)
 
 		// reset cursor to avoid over height limit of screen
@@ -195,23 +202,37 @@ func (srv *todoService) pressCtrlR(*tcell.EventKey) {
 	srv.refreshNormalMode()
 }
 
+func (srv *todoService) pressCtrlX(*tcell.EventKey) {
+	if !srv.s.IsNormalMode() {
+		return
+	}
+	showDone(srv.s)
+	srv.s.DoneDoingMode()
+}
+
+func (srv *todoService) pressCtrlZ(*tcell.EventKey) {
+	if !srv.s.IsNormalMode() {
+		return
+	}
+	showDoing(srv.s)
+	srv.s.DoneDoingMode()
+}
+
 func (srv *todoService) refreshInsertMode(msg string) {
 	srv.s.Clear()
-	srv.s.SetContent(0, show(srv.s), msg+srv.input)
+	srv.s.SetContent(0, showDefault(srv.s), msg+srv.input)
 }
 
 func (srv *todoService) refreshNormalMode() {
 	s := srv.s
 	s.Clear()
-	show(s)
+	showDefault(s)
 }
 
 func (srv *todoService) getCategoryByCursor() (cateKey string, cursorOffset int) {
 	s := srv.s
 
 	curLn := s.CursorLine()
-
-	//panic(fmt.Sprintf("cursor = %d", curLn))
 
 	cateKeys := todolist.CateKeys()
 
@@ -239,7 +260,6 @@ func (srv *todoService) getCategoryByCursor() (cateKey string, cursorOffset int)
 		}
 
 		if idx >= curLn {
-			//panic("cate = " + cate.Key())
 			return cate.Key(), curLn - cateLn
 		}
 
