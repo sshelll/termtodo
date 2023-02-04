@@ -1,20 +1,24 @@
 # Termtodo
-Terminal todo tool.  
 
-### Install
-`` go get github.com/SCU-SJL/termtodo``
+Terminal todo tool.
 
-### Run
-run `` termtodo `` if GOPATH was configured  
-or `` $GOPATH/bin/termtodo`` instead.  
+## Install
 
-### Attention:  
-persistent file is ``~/local/lib/todo.yml``
+`go get github.com/sshelll/termtodo`
 
+## Run
 
-### Help
-|   Key           |  Desc                                                 |
-|  ----           |  ----                                                 |
+run `termtodo` if GOPATH was configured  
+or `$GOPATH/bin/termtodo` instead.
+
+## Attention
+
+persistent file is `~/.local/termtodo/todo.yml`
+
+## Help
+
+| Key             | Desc                                                  |
+| --------------- | ----------------------------------------------------- |
 | Ctrl-r          | drop all changes since the program was run            |
 | Ctrl-k          | create new category                                   |
 | Ctrl-n          | create new todo and put it in the current category    |

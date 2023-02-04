@@ -2,6 +2,7 @@ package util
 
 import (
 	"log"
+	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -49,4 +50,22 @@ func ContainStr(src []string, target string) bool {
 		}
 	}
 	return false
+}
+
+func CreateFile(path string) error {
+	if Stat(path) {
+		return nil
+	}
+	return os.MkdirAll(path, os.ModePerm)
+}
+
+func Stat(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
+	}
+	return true
 }

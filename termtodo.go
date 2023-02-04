@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/SCU-SJL/termtodo/core"
-	"github.com/SCU-SJL/termtodo/screen"
-	"github.com/SCU-SJL/termtodo/todolist"
+	"github.com/sshelll/termtodo/core"
+	"github.com/sshelll/termtodo/screen"
+	"github.com/sshelll/termtodo/todolist"
 )
 
 func main() {

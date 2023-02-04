@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 
-	"github.com/SCU-SJL/termtodo/util"
+	"github.com/sshelll/termtodo/util"
 	"gopkg.in/yaml.v3"
 )
 
@@ -208,6 +209,10 @@ func groupedContent(isDone bool) []string {
 
 func Save() error {
 
+	if err := util.CreateFile(filepath.Dir(inst.filePath)); err != nil {
+		return err
+	}
+
 	f, err := os.Create(inst.filePath)
 	if err != nil {
 		return err
@@ -281,7 +286,7 @@ func init() {
 	inst = new(todoList)
 
 	util.WithFatalf(func() error {
-		p, err := util.JoinHomePath(`/local/lib/todo.yml`)
+		p, err := util.JoinHomePath(`/.local/termtodo/todo.yml`)
 		inst.filePath = p
 		return err
 	}, "get file path")

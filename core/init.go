@@ -1,8 +1,8 @@
 package core
 
 import (
-	"github.com/SCU-SJL/termtodo/screen"
 	"github.com/gdamore/tcell/v2"
+	"github.com/sshelll/termtodo/screen"
 )
 
 var (

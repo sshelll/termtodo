@@ -1,4 +1,4 @@
-module github.com/SCU-SJL/termtodo
+module github.com/sshelll/termtodo
 
 go 1.16
 

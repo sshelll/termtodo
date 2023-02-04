@@ -3,10 +3,10 @@ package core
 import (
 	"fmt"
 
-	"github.com/SCU-SJL/termtodo/screen"
-	"github.com/SCU-SJL/termtodo/todolist"
-	"github.com/SCU-SJL/termtodo/util"
 	"github.com/gdamore/tcell/v2"
+	"github.com/sshelll/termtodo/screen"
+	"github.com/sshelll/termtodo/todolist"
+	"github.com/sshelll/termtodo/util"
 )
 
 type todoService struct {
