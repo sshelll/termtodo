@@ -4,7 +4,7 @@ Terminal todo tool.
 
 ## Install
 
-`go get github.com/sshelll/termtodo`
+`go install github.com/sshelll/termtodo@latest`
 
 ## Run
 
