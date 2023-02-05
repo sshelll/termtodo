@@ -220,7 +220,7 @@ func (srv *todoService) pressCtrlZ(*tcell.EventKey) {
 
 func (srv *todoService) refreshInsertMode(msg string) {
 	srv.s.Clear()
-	srv.s.SetContent(0, showDefault(srv.s), msg+srv.input)
+	srv.s.SetContent(0, showDefault(srv.s), msg+srv.input+"_")
 }
 
 func (srv *todoService) refreshNormalMode() {
