@@ -1,8 +1,9 @@
 package screen
 
 import (
-	"github.com/mattn/go-runewidth"
 	"log"
+
+	"github.com/mattn/go-runewidth"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -106,4 +107,5 @@ func Init() {
 	s.Clear()
 
 	DefaultScreen = &Screen{s, def, 1, false}
+
 }

@@ -23,8 +23,7 @@ func main() {
 	defer screen.DefaultScreen.Fini()
 	defer todolist.Save()
 
-	core.Init(screen.DefaultScreen.SetCursorLine(1))
-	core.Dispatcher.Dispatch()
+	core.Start(screen.DefaultScreen.SetCursorLine(1))
 
 }
 
