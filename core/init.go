@@ -6,17 +6,17 @@ import (
 )
 
 var (
-	Dispatcher *dispatcher
-	keyBinder  *KeyBinder
+	keyBinder *KeyBinder
 )
 
-func Init(s *screen.Screen) {
+func Start(s *screen.Screen) {
 	keyBinder = new(KeyBinder)
 	bindKeys(s)
-	Dispatcher = &dispatcher{
+	dispatcher := &dispatcher{
 		s:         s,
 		keyBinder: keyBinder,
 	}
+	dispatcher.Start()
 }
 
 func bindKeys(s *screen.Screen) {
@@ -76,6 +76,16 @@ func bindKeys(s *screen.Screen) {
 	keyBinder.Bind(
 		srv.pressCtrlZ,
 		tcell.KeyCtrlZ,
+	)
+
+	keyBinder.Bind(
+		srv.pressLeft,
+		tcell.KeyLeft,
+	)
+
+	keyBinder.Bind(
+		srv.pressRight,
+		tcell.KeyRight,
 	)
 
 }

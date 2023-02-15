@@ -171,6 +171,30 @@ func Content() []string {
 	}
 
 	return lines
+
+}
+
+func ContentLineCnt() int {
+
+	cnt := 1
+
+	for _, cateKey := range inst.CateKeys {
+
+		cnt++
+
+		cate, ok := inst.categories[cateKey]
+		if !ok {
+			continue
+		}
+
+		if !cate.fold {
+			cnt += len(cate.items)
+		}
+
+	}
+
+	return cnt
+
 }
 
 func DoingContent() []string {
@@ -238,7 +262,7 @@ func SwitchFoldStatus(cateKey string) {
 	}
 }
 
-func RemarkItemStatus(cateKey string, offset int) {
+func ChangeItemStatus(cateKey string, offset int) {
 	for _, cate := range inst.categories {
 		if cate.Key() == cateKey && offset-1 < len(cate.items) {
 			cate.items[offset-1].IsDone = !cate.items[offset-1].IsDone
@@ -263,15 +287,13 @@ func regroup() {
 	cateMap := make(map[string]*category, 5)
 
 	for _, item := range inst.Items {
-		// update categories
-		if cateMap[item.Key] == nil {
-			cateMap[item.Key] = newCategory(item.Key).Append(item)
-			if c, ok := oldCate[item.Key]; ok {
-				cateMap[item.Key].fold = c.fold
-
-			}
-		} else {
+		if cateMap[item.Key] != nil {
 			cateMap[item.Key].Append(item)
+			continue
+		}
+		cateMap[item.Key] = newCategory(item.Key).Append(item)
+		if c, ok := oldCate[item.Key]; ok {
+			cateMap[item.Key].fold = c.fold
 		}
 	}
 

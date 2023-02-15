@@ -69,3 +69,31 @@ func Stat(path string) bool {
 	}
 	return true
 }
+
+func CloneRuneSlice(src []rune) []rune {
+	dst := make([]rune, len(src))
+	copy(dst, src)
+	return dst
+}
+
+func Min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func RuneLen(s string) int {
+	return len([]rune(s))
+}
+
+func StrLen(r rune) int {
+	return len(string(r))
+}
