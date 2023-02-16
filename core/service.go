@@ -279,7 +279,8 @@ func (srv *todoService) refreshInsertMode() {
 	lineCnt := showMain(srv.s)
 	srv.s.SetContent(0, lineCnt, prefixMsg+string(srv.input))
 
-	cellX := util.RuneLen(prefixMsg) + srv.convPosToCell()
+	// cursor pos x is at prefix msg + input cursor pos
+	cellX := srv.cellCnt(prefixMsg) + srv.convPosToCell()
 	srv.s.ShowCursor(cellX, lineCnt)
 
 }
@@ -344,15 +345,18 @@ func (srv *todoService) decrInputCursorPos() {
 }
 
 func (srv *todoService) convPosToCell() int {
+	return srv.cellCnt(string(srv.input[:srv.inputCursorPos]))
+}
 
-	cell := 0
-	inputRune := []rune(srv.input)
+func (srv *todoService) cellCnt(s string) int {
 
-	for i := 0; i < srv.inputCursorPos; i++ {
+	cnt := 0
+
+	for _, r := range s {
 		// some unicode char takes 2 cells, but its strlen is 3
-		cell += util.Min(2, util.StrLen(inputRune[i]))
+		cnt += util.Min(2, util.StrLen(r))
 	}
 
-	return cell
+	return cnt
 
 }
