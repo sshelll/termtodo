@@ -11,8 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var inst *todoList
-
 type todoList struct {
 	Items      []*todoItem          `yaml:"Items"`
 	CateKeys   []string             `yaml:"cate_keys"`
@@ -54,6 +52,13 @@ func (c *category) Size() int {
 func (c *category) Append(item *todoItem) *category {
 	c.items = append(c.items, item)
 	return c
+}
+
+func PersistFilePath() string {
+	if inst == nil {
+		return calPersistentFilePath()
+	}
+	return inst.filePath
 }
 
 func AddNewItem(key, desc string) {
@@ -233,7 +238,7 @@ func groupedContent(isDone bool) []string {
 
 func Save() error {
 
-	if err := util.CreateFile(filepath.Dir(inst.filePath)); err != nil {
+	if err := util.Mkdir(filepath.Dir(inst.filePath)); err != nil {
 		return err
 	}
 
@@ -299,22 +304,6 @@ func regroup() {
 
 	for _, cate := range cateMap {
 		inst.categories[cate.key] = cate
-	}
-
-}
-
-func init() {
-
-	inst = new(todoList)
-
-	util.WithFatalf(func() error {
-		p, err := util.JoinHomePath(`/.local/termtodo/todo.yml`)
-		inst.filePath = p
-		return err
-	}, "get file path")
-
-	if _, err := os.Stat(inst.filePath); err == nil {
-		util.WithFatalf(Reload, "reload")
 	}
 
 }
