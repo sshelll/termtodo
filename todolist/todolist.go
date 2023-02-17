@@ -268,10 +268,9 @@ func SwitchFoldStatus(cateKey string) {
 }
 
 func ChangeItemStatus(cateKey string, offset int) {
-	for _, cate := range inst.categories {
-		if cate.Key() == cateKey && offset-1 < len(cate.items) {
-			cate.items[offset-1].IsDone = !cate.items[offset-1].IsDone
-		}
+	cate := inst.categories[cateKey]
+	if cate != nil && offset-1 < len(cate.items) {
+		cate.items[offset-1].IsDone = !cate.items[offset-1].IsDone
 	}
 }
 
