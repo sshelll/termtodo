@@ -13,9 +13,13 @@ or `$GOPATH/bin/termtodo` instead.
 
 ## Attention
 
-default persistent file is `~/.local/termtodo/todo.yml`
+The default persistent file path is `~/.local/termtodo/todo.yml`
 
-you can set `TERMTODO_PERSIST_FILE` env as your customized persistent file path.
+And you can set `TERMTODO_PERSIST_FILE` env as your customized persistent file path.
+
+Thers's a hack usage of this env key,
+such as you can set a file path which is in a `icloud` or `onedrive` directory,
+and then you can make it sync. 😄
 
 ## Help
 
