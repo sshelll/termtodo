@@ -3,36 +3,60 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 
 	"github.com/sshelll/termtodo/core"
 	"github.com/sshelll/termtodo/screen"
 	"github.com/sshelll/termtodo/todolist"
+	"github.com/sshelll/termtodo/util"
 )
 
-var isHelp = false
+var (
+	flagShowKeyMapping      = flag.Bool("k", false, "show key mapping")
+	flagShowPersistFilePath = flag.Bool("p", false, "show persist file path")
+)
 
 func main() {
 
-	parseFlag()
-	if isHelp {
-		helpInfo()
+	if handleFlag() {
 		return
 	}
 
+	todolist.Init()
 	screen.Init()
-	defer screen.DefaultScreen.Fini()
-	defer todolist.Save()
+
+	defer func() {
+		r := recover()
+		screen.DefaultScreen.Fini()
+		todolist.Save()
+		if r != nil {
+			log.Fatalf("[termtodo] fatal error: %v", r)
+		}
+	}()
 
 	core.Start(screen.DefaultScreen.SetCursorLine(1))
 
 }
 
-func parseFlag() {
-	flag.BoolVar(&isHelp, "h", false, "help info")
+func handleFlag() (shouldExit bool) {
+
 	flag.Parse()
+
+	if util.BoolPtrVal(flagShowPersistFilePath) {
+		fmt.Println(todolist.PersistFilePath())
+		return true
+	}
+
+	if util.BoolPtrVal(flagShowKeyMapping) {
+		printKeyMapping()
+		return true
+	}
+
+	return false
+
 }
 
-func helpInfo() {
+func printKeyMapping() {
 	fmt.Println(`| Key             | Desc                                                  |
 | --------------- | ----------------------------------------------------- |
 | Ctrl-r          | drop all changes since the program was run            |

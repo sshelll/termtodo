@@ -52,7 +52,7 @@ func ContainStr(src []string, target string) bool {
 	return false
 }
 
-func CreateFile(path string) error {
+func Mkdir(path string) error {
 	if Stat(path) {
 		return nil
 	}
@@ -96,4 +96,8 @@ func RuneLen(s string) int {
 
 func StrLen(r rune) int {
 	return len(string(r))
+}
+
+func BoolPtrVal(b *bool) bool {
+	return b != nil && *b
 }
