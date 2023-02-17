@@ -13,7 +13,9 @@ or `$GOPATH/bin/termtodo` instead.
 
 ## Attention
 
-persistent file is `~/.local/termtodo/todo.yml`
+default persistent file is `~/.local/termtodo/todo.yml`
+
+you can set `TERMTODO_PERSIST_FILE` env as your customized persistent file path.
 
 ## Help
 
