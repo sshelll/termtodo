@@ -18,12 +18,15 @@ type todoService struct {
 }
 
 func (srv *todoService) pressEscOrCtrlC(*tcell.EventKey) {
+
 	s := srv.s
 
 	if s.IsNormalMode() {
 		s.Exit()
 		return
 	}
+
+	srv.inputCursorPos = 0
 
 	if s.IsInsertMode() {
 		s.NormalMode()
